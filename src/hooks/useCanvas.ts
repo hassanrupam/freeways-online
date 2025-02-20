@@ -10,7 +10,7 @@ export const useCanvas = (storageKey: string) => {
       const manager = new CanvasManager(canvasRef.current,storageKey);
       setCanvasManager(manager);
     }
-  }, []);
+  }, [storageKey]);
 
   const zoomIn = () => canvasManager?.zoomCanvas(1.5); // Zoom in
   const zoomOut = () => canvasManager?.zoomCanvas(0.5); // Zoom out

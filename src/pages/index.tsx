@@ -1,6 +1,6 @@
 import GameCanvas from "@/components/GameCanvas";
 import { useState } from "react";
-``
+
 
 const GridCanvas = () => {
   const [selectedCanvas, setSelectedCanvas] = useState<number | null>(null);
