@@ -15,7 +15,7 @@ const GridCanvas = () => {
         className={`grid transition-all duration-500 ${selectedCanvas === null ? "grid-cols-7 grid-rows-7" : "grid-cols-1 grid-rows-1"
           } w-full h-full p-2`}
       >
-        {Array.from({ length: 49 }).map((_, index) => (
+        {Array.from({ length: 69 }).map((_, index) => (
           <div
             key={index}
             className={`relative flex items-center justify-center bg-gray-800 transition-all duration-500 border-[1px] ${selectedCanvas === null

@@ -1,8 +1,16 @@
 import { useCanvas } from "@/hooks/useCanvas";
 import { useEffect, useState } from "react";
 
-const GameCanvas = () => {
-    const { canvasRef, canvasManager, zoomIn, zoomOut, panLeft, panRight, panUp, panDown } = useCanvas();
+interface GameCanvasProps {
+    selectedCanvas?: number | null;
+    index?: number | null;
+    moveToGrid?: (event: React.MouseEvent<HTMLDivElement | HTMLButtonElement>) => void;
+}
+const GameCanvas = ({selectedCanvas,index,moveToGrid}: GameCanvasProps) => {
+    const storageKey = `canvas-${index ?? "default"}`;
+    // const { canvasRef, canvasManager, zoomIn, zoomOut, panLeft, panRight, panUp, panDown } = useCanvas();
+    const { canvasRef, canvasManager, zoomIn, zoomOut, panLeft, panRight, panUp, panDown } = useCanvas(storageKey);
+
     const [keysPressed, setKeysPressed] = useState({
         ArrowUp: false,
         ArrowDown: false,
@@ -57,7 +65,7 @@ const GameCanvas = () => {
     };
 
     return (
-        <div className="relative w-full h-full">
+        <div className="w-full h-full">
             <canvas
                 ref={canvasRef}
                 className="absolute top-0 left-0 w-full h-full"
@@ -74,7 +82,8 @@ const GameCanvas = () => {
             />
 
             {/* Controls */}
-            <div className="w-screen absolute bottom-0 flex flex-row justify-center items-center w-48 h-16 bg-white">
+            <div className={`w-full absolute bottom-0 h-20 flex-flex-col ${selectedCanvas!=null ? "visible" : "hidden"}`}>
+                <div className="flex flex-row justify-center items-center bg-white">
                 <div className="w-1/3 p-2">
                     <button
                         onClick={() => canvasManager?.clearCanvas()}
@@ -92,10 +101,12 @@ const GameCanvas = () => {
                     </div>
                 </div>
                 <div className="w-1/3 p-2">
-                    <div className="flex gap-2 justify-end">
+                    <div className="flex gap-2 justify-end ">
                         <button onClick={zoomIn} className="bg-blue-600 text-white px-3 py-1 rounded">Zoom In</button>
                         <button onClick={zoomOut} className="bg-blue-600 text-white px-3 py-1 rounded">Zoom Out</button>
+                        <button onClick={moveToGrid} className="bg-blue-600 text-white px-2 py-1 rounded">Exit</button>
                     </div>
+                </div>
                 </div>
             </div>
         </div>

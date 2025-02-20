@@ -13,17 +13,19 @@ export class CanvasManager {
     private scaleFactor: number = 1;  // Zoom level
     private offsetX: number = 0;  // Pan X
     private offsetY: number = 0;  // Pan Y
+    private storageKey: string; // Unique key for each canvas
 
-    constructor(canvas: HTMLCanvasElement) {
+    constructor(canvas: HTMLCanvasElement,storageKey: string) {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d")!;
         this.renderer = new Renderer(this.ctx);
+        this.storageKey = storageKey; // Assign the key
         this.initializeCanvas();
     }
 
     public initializeCanvas() {
         this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
+        this.canvas.height = window.innerHeight-100;
         this.renderer.clearCanvas(GAME_PREFERENCE.CANVAS.BACKGROUND, this.canvas.width, this.canvas.height);
         this.loadFromLocalStorage();
         this.setupCanvas();
@@ -50,7 +52,7 @@ export class CanvasManager {
     }
 
     private loadFromLocalStorage() {
-        const savedRoads = localStorage.getItem("roads");
+        const savedRoads = localStorage.getItem(this.storageKey);
         if (savedRoads) {
             this.roads = JSON.parse(savedRoads).map((roadData: { x: number; y: number }[]) => {
                 const road = new Road();
@@ -112,13 +114,13 @@ export class CanvasManager {
     }
 
     private saveToLocalStorage() {
-        localStorage.setItem("roads", JSON.stringify(this.roads.map(road => road.points)));
+        localStorage.setItem(this.storageKey, JSON.stringify(this.roads.map(road => road.points)));
     }
 
     public clearCanvas() {
         this.roads = [];
         this.renderer.clearCanvas(GAME_PREFERENCE.CANVAS.BACKGROUND, this.canvas.width, this.canvas.height);
-        localStorage.removeItem("roads");
+        localStorage.removeItem(this.storageKey);
     }
 
     private screenToCanvas(x: number, y: number) {
