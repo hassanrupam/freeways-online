@@ -4,9 +4,11 @@ export const GAME_PREFERENCE = {
     },
     ROAD: {
         COLOR:  "#222222",
-        WIDTH: 40,
+        WIDTH: 50,
         MARKING:{
-            WIDTH: 10,
+            LENGTH:10,
+            GAP:40,
+            WIDTH: 4,
             DISTANCE: 100,
             COLOR: "#FDE68A",
         },

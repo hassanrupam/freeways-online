@@ -1,13 +1,13 @@
-import { ArrowMarker } from "./ArrowMarker";
+import { LaneMarker } from "./LaneMarker"; // Updated import
 import { Road } from "./Road";
 
 export class Renderer {
     private ctx: CanvasRenderingContext2D;
-    private arrowMarker: ArrowMarker;
+    private laneMarker: LaneMarker; // Changed from ArrowMarker
 
     constructor(ctx: CanvasRenderingContext2D) {
         this.ctx = ctx;
-        this.arrowMarker = new ArrowMarker(ctx);
+        this.laneMarker = new LaneMarker(ctx); // Changed from ArrowMarker
     }
 
     drawRoad(road: Road) {
@@ -34,9 +34,8 @@ export class Renderer {
         this.ctx.closePath(); // Ensure the road is closed
         this.ctx.fill(); // Fill road area
 
-        this.arrowMarker.drawArrows(road);
+        this.laneMarker.drawLaneMarkings(road); // Use lane markings instead of arrows
     }
-    
     
     clearCanvas(color: string, width: number, height: number) {
         this.ctx.fillStyle = color;

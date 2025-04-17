@@ -10,22 +10,19 @@ export class CanvasManager {
     private roads: Road[] = [];
     private currentRoad: Road | null = null;
     private renderer: Renderer;
-    private scaleFactor: number = 1;  // Zoom level
-    private offsetX: number = 0;  // Pan X
-    private offsetY: number = 0;  // Pan Y
     private storageKey: string; // Unique key for each canvas
 
-    constructor(canvas: HTMLCanvasElement,storageKey: string) {
+    constructor(canvas: HTMLCanvasElement, storageKey: string) {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d")!;
         this.renderer = new Renderer(this.ctx);
-        this.storageKey = storageKey; // Assign the key
+        this.storageKey = storageKey; 
         this.initializeCanvas();
     }
 
     public initializeCanvas() {
         this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight-100;
+        this.canvas.height = window.innerHeight - 100;
         this.renderer.clearCanvas(GAME_PREFERENCE.CANVAS.BACKGROUND, this.canvas.width, this.canvas.height);
         this.loadFromLocalStorage();
         this.setupCanvas();
@@ -33,22 +30,6 @@ export class CanvasManager {
 
     private setupCanvas() {
         this.ctx.imageSmoothingEnabled = false;
-    }
-
-    public zoomCanvas(scale: number) {
-        this.scaleFactor *= scale;
-        this.applyTransformations();
-    }
-
-    public panCanvas(dx: number, dy: number) {
-        this.offsetX += dx;
-        this.offsetY += dy;
-        this.applyTransformations();
-    }
-
-    private applyTransformations() {
-        this.ctx.setTransform(this.scaleFactor, 0, 0, this.scaleFactor, this.offsetX, this.offsetY);
-        this.redraw();
     }
 
     private loadFromLocalStorage() {
@@ -64,48 +45,85 @@ export class CanvasManager {
     }
 
     public startDrawing(x: number, y: number) {
+        if (!this.ctx) return;
+    
         this.isDrawing = true;
         this.currentRoad = new Road();
-        const { x: canvasX, y: canvasY } = this.screenToCanvas(x, y);
-        this.currentRoad.addPoint(canvasX, canvasY);
+    
+        const adjustedPoint = this.adjustForCenter(x, y);
+    
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.rect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.clip();
+    
+        this.currentRoad.addPoint(adjustedPoint.x, adjustedPoint.y);
     }
 
     public draw(x: number, y: number) {
         if (!this.isDrawing || !this.currentRoad) return;
-
+    
         const prevPoint = this.currentRoad.getLastPoint();
-        const { x: canvasX, y: canvasY } = this.screenToCanvas(x, y);
+        const adjustedPoint = this.adjustForCenter(x, y);
+    
+        // Restrict drawing within canvas bounds
+        adjustedPoint.x = Math.max(0, Math.min(this.canvas.width, adjustedPoint.x));
+        adjustedPoint.y = Math.max(0, Math.min(this.canvas.height, adjustedPoint.y));
 
-        let intersectionPoint: { x: number; y: number } | null = null;
-
-        for (let road of [...this.roads, this.currentRoad]) {
-            for (let [A, B] of road.getSegments()) {
-                const intersection = IntersectionDetector.getIntersection(prevPoint, { x: canvasX, y: canvasY }, A, B);
-                if (intersection) {
-                    intersectionPoint = intersection;
-                    break;
-                }
-            }
-            if (intersectionPoint) break;
-        }
-
-        if (intersectionPoint) {
-            this.currentRoad.addPoint(intersectionPoint.x, intersectionPoint.y);
-            this.stopDrawing();
-            return;
-        }
-
-        this.currentRoad.addPoint(canvasX, canvasY);
+        // let intersectionPoint: { x: number; y: number } | null = null;
+    
+        // for (let road of [...this.roads, this.currentRoad]) {
+        //     for (let [A, B] of road.getSegments()) {
+        //         const intersection = IntersectionDetector.getIntersection(prevPoint, adjustedPoint, A, B);
+        //         if (intersection) {
+        //             intersectionPoint = intersection;
+        //             break;
+        //         }
+        //     }
+        //     if (intersectionPoint) break;
+        // }
+    
+        // if (intersectionPoint) {
+        //     this.currentRoad.addPoint(intersectionPoint.x, intersectionPoint.y);
+        //     this.markIntersection(intersectionPoint);
+        //     this.stopDrawing();
+        //     return;
+        // }
+    
+        this.currentRoad.addPoint(adjustedPoint.x, adjustedPoint.y);
         this.renderer.drawRoad(this.currentRoad);
     }
 
     public stopDrawing() {
         if (this.currentRoad && this.currentRoad.points.length > 1) {
+            this.detectSelfMerges(this.currentRoad);
             this.roads.push(this.currentRoad);
         }
         this.isDrawing = false;
         this.currentRoad = null;
+    
+        this.ctx.restore();
         this.saveToLocalStorage();
+    }
+
+    private detectSelfMerges(road: Road) {
+        // const points = road.points;
+        // for (let i = 0; i < points.length - 1; i++) {
+        //     for (let j = i + 2; j < points.length - 1; j++) {
+        //         const intersection = IntersectionDetector.getIntersection(points[i], points[i + 1], points[j], points[j + 1]);
+        //         if (intersection) {
+        //             this.markIntersection(intersection);
+        //             return;
+        //         }
+        //     }
+        // }
+    }
+
+    private markIntersection(point: { x: number; y: number }) {
+        // this.ctx.fillStyle = "blue";
+        // this.ctx.beginPath();
+        // this.ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
+        // this.ctx.fill();
     }
 
     private redraw() {
@@ -123,10 +141,12 @@ export class CanvasManager {
         localStorage.removeItem(this.storageKey);
     }
 
-    private screenToCanvas(x: number, y: number) {
+    private adjustForCenter(x: number, y: number) {
+        const roadWidth = GAME_PREFERENCE.ROAD.WIDTH / 2;
+
         return {
-            x: (x - this.offsetX) / this.scaleFactor,
-            y: (y - this.offsetY) / this.scaleFactor,
+            x: x ,
+            y: y - roadWidth,
         };
     }
 }
