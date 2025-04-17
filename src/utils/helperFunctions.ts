@@ -1,3 +1,5 @@
+import { Coordinate } from "@/types/dataTypes";
+
 export const generateCenteredSpiralMatrix = (n: number): number[][] => {
     if (n % 2 === 0) throw new Error("Matrix size must be odd");
 
@@ -66,3 +68,17 @@ export const getGridLayoutClassNames = (n: number): string => {
     return className + ' ' + gridRowCols;
 
 }
+
+export const getRoadCoordinatesByStorageKey = (
+    state: any,
+    storageKey: string
+  ): Coordinate[][] => {
+    const roadData = state.levelWiseRoad.levelWiseRoad;
+    // console.log("Road Data: ", roadData);
+    // console.log("key: ", storageKey);
+    if (roadData.levelStoreKey === storageKey) {
+        // console.log("road: ",roadData.roadCoordinates)
+      return roadData.roadCoordinates;
+    }
+    return []; // Return empty array if no match
+  };

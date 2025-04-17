@@ -6,7 +6,7 @@ export interface GameLevelState {
 }
 
 const initialState: GameLevelState = {
-    levelMatrixNumber: 7,
+    levelMatrixNumber: 3,
 };
 
 const gameLevelSlice = createSlice({

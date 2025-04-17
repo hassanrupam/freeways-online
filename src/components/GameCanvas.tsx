@@ -1,4 +1,7 @@
 import { useCanvas } from "@/hooks/useCanvas";
+import { faShield } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 interface GameCanvasProps {
     selectedCanvas?: number | null;
     index?: number | null;
@@ -15,10 +18,15 @@ const GameCanvas = ({ selectedCanvas, index, exitCanvas }: GameCanvasProps) => {
             <div className="relative w-full h-full">
                 {!selectedCanvas &&
                     <div className={`absolute top-0 left-0 right-0  h-full text-center text-xl 
-                        bg-[#FFFFFF] bg-opacity-20 z-[10] flex justify-center items-center 
+                        ${index&&index%2===0 ? "bg-slate-500" : "bg-slate-700"} bg-opacity-100 z-[10] flex justify-center items-center 
                         rounded-lg shadow-md`}>
-                        {index}
+                       
+                        <FontAwesomeIcon className="text-9xl text-stone-800" icon={faShield}/>
+                        <span className="absolute inset-0 flex justify-center items-center text-white text-3xl font-bold">
+                            {index}
+                        </span>
                     </div>
+                    
                 }
                 <canvas
                     ref={canvasRef}

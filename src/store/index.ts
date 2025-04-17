@@ -10,6 +10,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 // Import slice reducers
 import gameLevelSlice from './slices/gameLevelSlice';
+import levelWiseRoadSlice from './slices/levelWiseRoadSlice';
 
 const isServer = typeof window === "undefined";
 // Determine whether encryption is enabled based on the environment variable
@@ -22,7 +23,7 @@ const persistVersion = encryptionEnabled ? 1 : 0;
 const persistConfig = {
   key: 'root',
   storage: storage, // Using IndexedDB via localForage
-  whitelist: ['gameLevel'], // reducers to persist (others will not be persisted)
+  whitelist: ['gameLevel','levelWiseRoad'], // reducers to persist (others will not be persisted)
   version: persistVersion,
   // Migration function to clear state if the version changed
   migrate: (state: any, currentVersion: number) => {
@@ -48,7 +49,8 @@ if (encryptionEnabled) {
 
 // Combine reducers into a root reducer
 const rootReducer = combineReducers({
-  gameLevel: gameLevelSlice
+  gameLevel: gameLevelSlice,
+  levelWiseRoad: levelWiseRoadSlice,
 });
 
 // Wrap the root reducer with persistReducer using the above config
