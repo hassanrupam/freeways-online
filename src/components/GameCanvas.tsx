@@ -1,7 +1,4 @@
-import { GAME_PREFERENCE } from "@/constants/settings";
 import { useCanvas } from "@/hooks/useCanvas";
-import { useEffect, useState } from "react";
-
 interface GameCanvasProps {
     selectedCanvas?: number | null;
     index?: number | null;

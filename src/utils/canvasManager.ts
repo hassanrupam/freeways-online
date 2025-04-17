@@ -1,6 +1,6 @@
 import { GAME_PREFERENCE } from "@/constants/settings";
 import { Road } from "./classes/Road";
-import { IntersectionDetector } from "./classes/IntersectionDetector";
+// import { IntersectionDetector } from "./classes/IntersectionDetector";
 import { Renderer } from "./classes/Renderer";
 
 export class CanvasManager {
@@ -63,7 +63,7 @@ export class CanvasManager {
     public draw(x: number, y: number) {
         if (!this.isDrawing || !this.currentRoad) return;
     
-        const prevPoint = this.currentRoad.getLastPoint();
+        // const prevPoint = this.currentRoad.getLastPoint();
         const adjustedPoint = this.adjustForCenter(x, y);
     
         // Restrict drawing within canvas bounds
@@ -96,7 +96,7 @@ export class CanvasManager {
 
     public stopDrawing() {
         if (this.currentRoad && this.currentRoad.points.length > 1) {
-            this.detectSelfMerges(this.currentRoad);
+            // this.detectSelfMerges(this.currentRoad);
             this.roads.push(this.currentRoad);
         }
         this.isDrawing = false;
@@ -106,25 +106,25 @@ export class CanvasManager {
         this.saveToLocalStorage();
     }
 
-    private detectSelfMerges(road: Road) {
-        // const points = road.points;
-        // for (let i = 0; i < points.length - 1; i++) {
-        //     for (let j = i + 2; j < points.length - 1; j++) {
-        //         const intersection = IntersectionDetector.getIntersection(points[i], points[i + 1], points[j], points[j + 1]);
-        //         if (intersection) {
-        //             this.markIntersection(intersection);
-        //             return;
-        //         }
-        //     }
-        // }
-    }
+    // private detectSelfMerges(road: Road) {
+    //     const points = road.points;
+    //     for (let i = 0; i < points.length - 1; i++) {
+    //         for (let j = i + 2; j < points.length - 1; j++) {
+    //             const intersection = IntersectionDetector.getIntersection(points[i], points[i + 1], points[j], points[j + 1]);
+    //             if (intersection) {
+    //                 this.markIntersection(intersection);
+    //                 return;
+    //             }
+    //         }
+    //     }
+    // }
 
-    private markIntersection(point: { x: number; y: number }) {
+    // private markIntersection(point: { x: number; y: number }) {
         // this.ctx.fillStyle = "blue";
         // this.ctx.beginPath();
         // this.ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
         // this.ctx.fill();
-    }
+    // }
 
     private redraw() {
         this.renderer.clearCanvas(GAME_PREFERENCE.CANVAS.BACKGROUND, this.canvas.width, this.canvas.height);

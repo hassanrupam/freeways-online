@@ -1,6 +1,6 @@
 import GameCanvas from "@/components/GameCanvas";
 import { useAppSelector } from "@/store";
-import { generateCenteredSpiralMatrix, getGridLayoutClassNames } from "@/utils/helperFunctions";
+import { generateCenteredSpiralMatrix } from "@/utils/helperFunctions";
 import { useEffect, useState } from "react";
 
 const GridCanvas = () => {
@@ -9,7 +9,6 @@ const GridCanvas = () => {
   
   const levelMatrixNumber = useAppSelector((state) => state.gameLevel.levelMatrixNumber);
   const [matrix, setMatrix] = useState<number[][]>(generateCenteredSpiralMatrix(levelMatrixNumber));
-  const [gridClassName, setGridClassName] = useState<string>(getGridLayoutClassNames(levelMatrixNumber));
   const selectCanvas = (index: number) => {
     setSelectedCanvas(index);
   };
@@ -20,7 +19,6 @@ const GridCanvas = () => {
 
   useEffect(() => {
     const matrix = generateCenteredSpiralMatrix(levelMatrixNumber);
-    setGridClassName(getGridLayoutClassNames(levelMatrixNumber));
     setMatrix(matrix);
   }
   , [levelMatrixNumber]);
@@ -34,9 +32,9 @@ const GridCanvas = () => {
           levelMatrixNumber===7 ? "grid-cols-7 grid-rows-7" : levelMatrixNumber===9 ? "grid-cols-9 grid-rows-9" : "grid-cols-1 grid-rows-1"  : "grid-cols-1 grid-rows-1"
         } w-full h-full p-2`}
       >
-        {matrix.map((row, rowIndex) => (
+        {matrix.map((row) => (
           <>
-            {row.map((col, colIndex) => (
+            {row.map((col) => (
              <div
              key={col}
              className={`relative flex items-center justify-center bg-gray-800 transition-all duration-500 border-[1px] ${

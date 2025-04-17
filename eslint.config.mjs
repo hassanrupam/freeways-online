@@ -18,6 +18,9 @@ export default [
   {
     rules: {
       'prefer-const': 'off',
+        // Disable the following TypeScript-specific rules:
+      '@typescript-eslint/ban-ts-comment': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
     },
   },
 ];
