@@ -29,7 +29,7 @@ const GridCanvas = () => {
 
 
   useEffect(() => {
-    axios.get("http://localhost:3000/api/game-settings")
+    axios.get("/api/game-settings")
     .then((response) => {
       const data = response.data[0];
       dispatch(setLevelSettings(data));
