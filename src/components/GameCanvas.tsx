@@ -1,33 +1,58 @@
 import { useCanvas } from "@/hooks/useCanvas";
+import { useAppSelector } from "@/store";
+import { CollisionBox } from "@/utils/classes/CollisionBox";
 import { faShield } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useEffect, useState } from "react";
 
 interface GameCanvasProps {
     selectedCanvas?: number | null;
     index?: number | null;
     exitCanvas?: (event: React.MouseEvent<HTMLDivElement | HTMLButtonElement>) => void;
+    collisionBox: CollisionBox[]
 }
-const GameCanvas = ({ selectedCanvas, index, exitCanvas }: GameCanvasProps) => {
+const GameCanvas = ({ selectedCanvas, index, exitCanvas, collisionBox }: GameCanvasProps) => {
     const storageKey = `canvas-${index ?? "default"}`;
-    const { canvasRef, canvasManager } = useCanvas(storageKey)
+    const { canvasRef, canvasManager } = useCanvas(storageKey, collisionBox)
+    const [isLevelCompleted, setIsLevelCompleted] = useState<boolean>(false);
+    const { levelCompleted, levelMatrixNumber } = useAppSelector((state) => state.gameLevel);
+    useEffect(()=>{
+        if (levelCompleted && levelCompleted.length > 0 && index != null) {
+            setIsLevelCompleted(levelCompleted.includes(index));
+        }
+    },[levelCompleted,index])
+
+    // in GameCanvas.tsx, below your existing effects
+    useEffect(() => {
+        if (canvasManager) {
+            canvasManager.updateCollisionBoxes(collisionBox);
+        }
+    }, [collisionBox, canvasManager]);
+  
 
     return (
         <div className="w-full h-full flex flex-col">
 
             {/* Canvas */}
             <div className="relative w-full h-full">
-                {!selectedCanvas &&
+                {!selectedCanvas && !isLevelCompleted &&
                     <div className={`absolute top-0 left-0 right-0  h-full text-center text-xl 
-                        ${index&&index%2===0 ? "bg-slate-500" : "bg-slate-700"} bg-opacity-100 z-[10] flex justify-center items-center 
+                        ${index&&index%2===0 ? "bg-gray-500" : "bg-gray-400"} bg-opacity-100 z-[10] flex justify-center items-center 
                         rounded-lg shadow-md`}>
                        
-                        <FontAwesomeIcon className="text-9xl text-stone-800" icon={faShield}/>
-                        <span className="absolute inset-0 flex justify-center items-center text-white text-3xl font-bold">
+                        <FontAwesomeIcon className={`${levelMatrixNumber >6 ? 'text-6xl' : levelMatrixNumber > 4 ? 'text-8xl' : 'text-9xl'} 
+                        ${index&&index%2===0 ? "text-stone-800" : "text-stone-600"}`} icon={faShield}/>
+                        <span className={`absolute inset-0 flex justify-center items-center text-white font-bold
+                            ${levelMatrixNumber > 6 ? 'text-xl' : levelMatrixNumber > 4 ?  'text-2xl' : 'text-4xl'}`}>
                             {index}
                         </span>
                     </div>
-                    
                 }
+                 {/* {selectedCanvas && 
+                    <div className={`absolute -m-2 p-4 top-12 left-12 right-0 bg-red-200 w-12 h-12 text-center text-xl z-[100]`}>
+                        
+                    </div>
+                 } */}
                 <canvas
                     ref={canvasRef}
                     className="absolute top-0 left-0 right-0 w-full h-full"
@@ -39,7 +64,11 @@ const GameCanvas = ({ selectedCanvas, index, exitCanvas }: GameCanvasProps) => {
                     onMouseMove={(e) => canvasManager?.draw(e.clientX, e.clientY)}
                     onMouseUp={() => canvasManager?.stopDrawing()}
                     onMouseLeave={() => canvasManager?.stopDrawing()}
-                    onContextMenu={(e) => e.preventDefault()}
+                    // onContextMenu={(e) => e.preventDefault()}
+                    onContextMenu={(e) => {
+                        e.preventDefault();
+                    }}
+
                 />
             </div>
 

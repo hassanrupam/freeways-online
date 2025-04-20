@@ -1,4 +1,5 @@
-import { Coordinate } from "@/types/dataTypes";
+import { Coordinate, LevelWiseCollisionBoxData } from "@/types/dataTypes";
+import { CollisionBox } from "./classes/CollisionBox";
 
 export const generateCenteredSpiralMatrix = (n: number): number[][] => {
     if (n % 2 === 0) throw new Error("Matrix size must be odd");
@@ -41,12 +42,12 @@ export const generateCenteredSpiralMatrix = (n: number): number[][] => {
     return matrix;
 }
 
-export const getGridLayoutClassNames = (n: number): string => { 
+export const getGridLayoutClassNames = (n: number): string => {
 
-    let className  = 'grid';
+    let className = 'grid';
     let gridRowCols = 'grid-cols-3 grid-rows-3'
 
-    switch(n){
+    switch (n) {
         case 3:
             gridRowCols = 'grid-cols-3 grid-rows-3';
             break;
@@ -72,13 +73,24 @@ export const getGridLayoutClassNames = (n: number): string => {
 export const getRoadCoordinatesByStorageKey = (
     state: any,
     storageKey: string
-  ): Coordinate[][] => {
+): Coordinate[][] => {
     const roadData = state.levelWiseRoad.levelWiseRoad;
     // console.log("Road Data: ", roadData);
     // console.log("key: ", storageKey);
     if (roadData.levelStoreKey === storageKey) {
         // console.log("road: ",roadData.roadCoordinates)
-      return roadData.roadCoordinates;
+        return roadData.roadCoordinates;
     }
     return []; // Return empty array if no match
-  };
+};
+
+export const getLevelWiseCollisionData = (
+    levelWiseCollisionData: LevelWiseCollisionBoxData[],
+    level: number
+): CollisionBox[] => {
+    const collisionData = levelWiseCollisionData.find((data) => data.level == level);
+    if (collisionData) {
+        return collisionData.collisionBoxes;
+    }
+    return []; // Return empty array if no match
+};

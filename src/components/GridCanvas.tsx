@@ -1,13 +1,17 @@
 import GameCanvas from "@/components/GameCanvas";
-import { useAppSelector } from "@/store";
-import { generateCenteredSpiralMatrix } from "@/utils/helperFunctions";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { setLevelSettings } from "@/store/slices/gameLevelSlice";
+import { CollisionBox } from "@/utils/classes/CollisionBox";
+import { generateCenteredSpiralMatrix, getLevelWiseCollisionData } from "@/utils/helperFunctions";
+import axios from "axios";
 import { useEffect, useState } from "react";
 
 const GridCanvas = () => {
-
+  const dispatch = useAppDispatch();
   const [selectedCanvas, setSelectedCanvas] = useState<number | null>(null);
+  const [collisionBox, setCollisionBox] = useState<CollisionBox[]>([]);
   
-  const levelMatrixNumber = useAppSelector((state) => state.gameLevel.levelMatrixNumber);
+  const {levelMatrixNumber, collisionBoxes} = useAppSelector((state) => state.gameLevel);
   const [matrix, setMatrix] = useState<number[][]>(generateCenteredSpiralMatrix(levelMatrixNumber));
   const selectCanvas = (index: number) => {
     setSelectedCanvas(index);
@@ -22,8 +26,28 @@ const GridCanvas = () => {
     setMatrix(matrix);
   }
   , [levelMatrixNumber]);
-  
-  
+
+
+  useEffect(() => {
+    axios.get("http://localhost:3000/api/game-settings")
+    .then((response) => {
+      const data = response.data[0];
+      dispatch(setLevelSettings(data));
+    }
+    )
+    .catch((error) => {
+      console.error("Error fetching data:", error);
+      // Handle the error as needed
+    }
+    );
+  }, 
+  [dispatch]);
+
+  useEffect(() => {
+    setCollisionBox(getLevelWiseCollisionData(collisionBoxes,1))
+  }, [selectedCanvas, collisionBoxes]);
+
+
   return (
     <div className="w-screen h-screen flex flex-col">
       <div
@@ -46,7 +70,7 @@ const GridCanvas = () => {
              }`}
              onClick={() => selectedCanvas === null && selectCanvas(col)}
            >
-             <GameCanvas selectedCanvas={selectedCanvas} index={col} exitCanvas={exitCanvas} />
+             <GameCanvas selectedCanvas={selectedCanvas} index={col} exitCanvas={exitCanvas} collisionBox={collisionBox} />
            </div>
             ))}
           </>
