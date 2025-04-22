@@ -10,6 +10,7 @@ export default {
     extend: {
       backgroundImage: {
         'landing-bg': "url('/assets/images/landing_bg.png')",
+        'landing-bg-mobile': "url('/assets/images/landing_bg_square.png')",
       },
       colors: {
         background: "var(--background)",

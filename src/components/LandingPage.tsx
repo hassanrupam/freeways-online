@@ -9,10 +9,10 @@ const LandingPage = () => {
 
   const router = useRouter();
   return ( 
-    <div className="min-h-screen flex items-center justify-center 
+    <div className={`w-screen min-h-screen flex items-center justify-center 
     bg-landing-bg bg-cover bg-no-repeat bg-center
-     p-6
-    ">
+     p-2
+    `}>
       <div className="text-center space-y-12">
         <div className="space-y-4">
           <motion.h1

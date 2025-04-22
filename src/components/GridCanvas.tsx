@@ -51,7 +51,7 @@ const GridCanvas = () => {
         dispatch(stopLoading());
     };
     fetchData();
-  }, [])
+  }, [dispatch])
 
   return (
     <div className="w-screen h-screen flex flex-col">

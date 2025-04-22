@@ -19,7 +19,7 @@ const NeonText = ({ text, size = 'small', weight = 'normal', effectClass= 'logo'
         } else if (size === 'medium') {
             setSizeClasses("text-4xl md:text-5xl");
         } else if (size === 'large') {
-            setSizeClasses("text-8xl md:text-9xl");
+            setSizeClasses("text-7xl md:text-9xl");
         }
     }, [size]);
 
