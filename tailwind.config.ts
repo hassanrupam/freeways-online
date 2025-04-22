@@ -8,9 +8,15 @@ export default {
   ],
   theme: {
     extend: {
+      backgroundImage: {
+        'landing-bg': "url('/assets/images/landing_bg.png')",
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+      },
+      fontFamily: {
+        barlow: ['barlow', 'sans-serif'], // Custom font name
       },
     },
   },

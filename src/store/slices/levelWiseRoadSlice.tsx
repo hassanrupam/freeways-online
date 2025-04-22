@@ -19,6 +19,7 @@ const levelWiseRoadSlice = createSlice({
     reducers: {
         setLevelWiseRoadSlice: (state, action) => {
             const { payload } = action;
+            console.log(payload)
             return {
                 ...state,
                 levelWiseRoad: payload,

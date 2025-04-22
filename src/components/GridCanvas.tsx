@@ -1,17 +1,18 @@
 import GameCanvas from "@/components/GameCanvas";
+import { API_ENDPOINTS } from "@/constants/static";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { setLevelSettings } from "@/store/slices/gameLevelSlice";
-import { CollisionBox } from "@/utils/classes/CollisionBox";
+import { resetLevelDesign, resetLevelSettings, setLevelDesign, setLevelSettings } from "@/store/slices/gameLevelSlice";
+import { startLoading, stopLoading } from "@/store/slices/globalSlice";
 import { generateCenteredSpiralMatrix, getLevelWiseCollisionData } from "@/utils/helperFunctions";
-import axios from "axios";
+import { getApiFromOutboundMiddleware } from "@/utils/requests/internalRequestHelper";
 import { useEffect, useState } from "react";
+import FancyFullScreenLoader from "./FancyFullScreenLoader";
 
 const GridCanvas = () => {
   const dispatch = useAppDispatch();
   const [selectedCanvas, setSelectedCanvas] = useState<number | null>(null);
-  const [collisionBox, setCollisionBox] = useState<CollisionBox[]>([]);
-  
   const {levelMatrixNumber, collisionBoxes} = useAppSelector((state) => state.gameLevel);
+  const {isLoading} = useAppSelector((state) => state.global);
   const [matrix, setMatrix] = useState<number[][]>(generateCenteredSpiralMatrix(levelMatrixNumber));
   const selectCanvas = (index: number) => {
     setSelectedCanvas(index);
@@ -27,29 +28,34 @@ const GridCanvas = () => {
   }
   , [levelMatrixNumber]);
 
-
   useEffect(() => {
-    axios.get("/api/game-settings")
-    .then((response) => {
-      const data = response.data[0];
-      dispatch(setLevelSettings(data));
-    }
-    )
-    .catch((error) => {
-      console.error("Error fetching data:", error);
-      // Handle the error as needed
-    }
-    );
-  }, 
-  [dispatch]);
+   
+      
+    const fetchData = async () => {
+        // setIsLoading(true);
+        dispatch(startLoading());
 
-  useEffect(() => {
-    setCollisionBox(getLevelWiseCollisionData(collisionBoxes,1))
-  }, [selectedCanvas, collisionBoxes]);
+        await Promise.all([
+          getApiFromOutboundMiddleware(
+            API_ENDPOINTS.GAME_SETTINGS,
+              (response) => dispatch(setLevelSettings(response[0])),
+              () => dispatch(resetLevelSettings())
+          ),
+          getApiFromOutboundMiddleware(
+            API_ENDPOINTS.LEVEL_DESIGN,
+              (response) => dispatch(setLevelDesign(response)),
+              () => dispatch(resetLevelDesign())
+          ),
+        ]);
 
+        dispatch(stopLoading());
+    };
+    fetchData();
+  }, [])
 
   return (
     <div className="w-screen h-screen flex flex-col">
+      {<FancyFullScreenLoader loading={isLoading} message={"Game is Loading..."}/>}
       <div
         className={`grid transition-all duration-500 ${
           selectedCanvas === null ? levelMatrixNumber===3 ? "grid-cols-3 grid-rows-3" : levelMatrixNumber===5? "grid-cols-5 grid-rows-5" : 
@@ -61,7 +67,7 @@ const GridCanvas = () => {
             {row.map((col) => (
              <div
              key={col}
-             className={`relative flex items-center justify-center bg-gray-800 transition-all duration-500 border-[1px] ${
+             className={`relative flex items-center justify-center bg-gray-800 transition-all duration-500 border-purple-700 border-[0.5px]  ${
                selectedCanvas === null
                  ? "w-full h-full cursor-pointer"
                  : selectedCanvas === col
@@ -70,7 +76,7 @@ const GridCanvas = () => {
              }`}
              onClick={() => selectedCanvas === null && selectCanvas(col)}
            >
-             <GameCanvas selectedCanvas={selectedCanvas} index={col} exitCanvas={exitCanvas} collisionBox={collisionBox} />
+             <GameCanvas selectedCanvas={selectedCanvas} index={col} exitCanvas={exitCanvas} collisionBox={getLevelWiseCollisionData(collisionBoxes,col)} />
            </div>
             ))}
           </>

@@ -24,6 +24,9 @@ const initialState: GameLevelState = {
 };
 
 function parseCollisionBoxes(boxesStr: string): CollisionBox[] {
+    if(!boxesStr){
+        return [];
+    }
     // 1) remove the leading/trailing [ ] and any whitespace/newlines
     const inner = boxesStr.trim().replace(/^\[|\]$/g, "");
   
@@ -46,11 +49,11 @@ function parseCollisionBoxes(boxesStr: string): CollisionBox[] {
       const size = Number(sizeStr);
   
       // 5) decide if locX/raw are numeric or keywords
-      const locX = locXraw === "left" || locXraw === "right"
-        ? (locXraw as "left" | "right")
+      const locX = locXraw === "left" || locXraw === "right" || locXraw === "center"
+        ? (locXraw as "left" | "right" | "center")
         : Number(locXraw);
-      const locY = locYraw === "top" || locYraw === "bottom"
-        ? (locYraw as "top" | "bottom")
+      const locY = locYraw === "top" || locYraw === "bottom" || locYraw === "center"
+        ? (locYraw as "top" | "bottom" | "center")
         : Number(locYraw);
   
       // 6) instantiate
@@ -71,22 +74,42 @@ const gameLevelSlice = createSlice({
         },
         setLevelSettings: (state, action) => {
             const { payload } = action;
+            console.log(payload)
             return {
                 ...state,
                 levelMatrixNumber: payload.LevelMatrix,
-                levelCompleted: payload.Completed.split(",").map(Number),
-                collisionBoxes: [
-                    {
-                        level: 1,
-                        collisionBoxes: parseCollisionBoxes(payload.Boxes),
-                    },
-                ]
+                levelCompleted: payload.Completed.split(",").map(Number)
             };
-
+        },
+        resetLevelSettings: (state) => {
+            return {
+                ...state,
+                levelMatrixNumber: initialState.levelMatrixNumber,
+                levelCompleted: initialState.levelCompleted,
+            };
+        },
+        setLevelDesign: (state, action) => {
+            const { payload } = action;
+            const collisionBoxes = payload.map((item: any) => ({
+                level: item.Level,
+                collisionBoxes: parseCollisionBoxes(item.Boxes),
+            }));
+            return {
+                ...state,
+                collisionBoxes,
+            };
+        },
+        resetLevelDesign: (state) => {
+            return {
+                ...state,
+                collisionBoxes: initialState.collisionBoxes,
+            };
         }
 
     },
 });
 
-export const { setLevelMatrixNumber,setLevelSettings } = gameLevelSlice.actions;
+export const { setLevelMatrixNumber,setLevelSettings, resetLevelSettings,
+    setLevelDesign, resetLevelDesign
+ } = gameLevelSlice.actions;
 export default gameLevelSlice.reducer;

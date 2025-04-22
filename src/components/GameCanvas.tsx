@@ -24,15 +24,19 @@ const GameCanvas = ({ selectedCanvas, index, exitCanvas, collisionBox }: GameCan
 
     // in GameCanvas.tsx, below your existing effects
     useEffect(() => {
-        if (canvasManager) {
+        if (canvasManager && selectedCanvas) {
             canvasManager.updateCollisionBoxes(collisionBox);
         }
-    }, [collisionBox, canvasManager]);
+    }, [collisionBox, canvasManager, selectedCanvas]);
   
 
     return (
         <div className="w-full h-full flex flex-col">
-
+            {!selectedCanvas && isLevelCompleted &&
+                <div className={`absolute top-0 left-0 right-0 flex justify-center items-center h-12 text-center text-xl bg-transparent`}>
+                    {index}
+                </div>
+            }
             {/* Canvas */}
             <div className="relative w-full h-full">
                 {!selectedCanvas && !isLevelCompleted &&
@@ -48,11 +52,7 @@ const GameCanvas = ({ selectedCanvas, index, exitCanvas, collisionBox }: GameCan
                         </span>
                     </div>
                 }
-                 {/* {selectedCanvas && 
-                    <div className={`absolute -m-2 p-4 top-12 left-12 right-0 bg-red-200 w-12 h-12 text-center text-xl z-[100]`}>
-                        
-                    </div>
-                 } */}
+                
                 <canvas
                     ref={canvasRef}
                     className="absolute top-0 left-0 right-0 w-full h-full"

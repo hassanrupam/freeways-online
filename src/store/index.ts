@@ -3,12 +3,12 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // LocalStorage adapter
 
-
 /* @ts-ignore */
 import { encryptTransform } from 'redux-persist-transform-encrypt';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 // Import slice reducers
+import globalSlice from './slices/globalSlice';
 import gameLevelSlice from './slices/gameLevelSlice';
 import levelWiseRoadSlice from './slices/levelWiseRoadSlice';
 
@@ -23,7 +23,7 @@ const persistVersion = encryptionEnabled ? 1 : 0;
 const persistConfig = {
   key: 'root',
   storage: storage, // Using IndexedDB via localForage
-  whitelist: ['gameLevel','levelWiseRoad'], // reducers to persist (others will not be persisted)
+  whitelist: ['global','gameLevel','levelWiseRoad'], // reducers to persist (others will not be persisted)
   version: persistVersion,
   // Migration function to clear state if the version changed
   migrate: (state: any, currentVersion: number) => {
@@ -49,6 +49,7 @@ if (encryptionEnabled) {
 
 // Combine reducers into a root reducer
 const rootReducer = combineReducers({
+  global: globalSlice,
   gameLevel: gameLevelSlice,
   levelWiseRoad: levelWiseRoadSlice,
 });

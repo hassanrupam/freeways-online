@@ -35,8 +35,6 @@ export class CanvasManager {
         this.renderer.clearCanvas(GAME_PREFERENCE.CANVAS.BACKGROUND, this.canvas.width, this.canvas.height);
         this.setupCanvas();
         this.loadFromLocalStorage();
-
-
     }
 
     getCanvasY() {
@@ -58,6 +56,7 @@ export class CanvasManager {
 
     private loadFromLocalStorage() {
         const savedRoads = this.roadCoordinates;
+        console.log(savedRoads)
         if (savedRoads) {
             this.roads = savedRoads.map((roadData: { x: number; y: number }[]) => {
                 const road = new Road();
@@ -214,6 +213,7 @@ export class CanvasManager {
         this.currentRoad = null;
 
         this.ctx.restore();
+        console.log("TRhis is called")
         this.saveToLocalStorage();
     }
 
@@ -231,10 +231,12 @@ export class CanvasManager {
     }
 
     private saveToLocalStorage() {
+        
         const data: LevelWiseRoadData = {
             levelStoreKey: this.storageKey,
             roadCoordinates: this.roads.map(road => road.points),
         }
+        console.log(data)
         this.dispatch(setLevelWiseRoadSlice(data));
     }
 
@@ -262,12 +264,14 @@ export class CanvasManager {
     }
 
     private parseCollisionBoxLocationX(box: CollisionBox) {
-        return box.locationX === 'right' ? this.canvas.width - box.size :
+        return box.locationX === 'center' ? (this.canvas.width/2) - box.size : 
+            box.locationX === 'right' ? this.canvas.width - box.size :
             box.locationX === 'left' ? 0 : box.locationXNumber;
     }
 
     private parseCollisionBoxLocationY(box: CollisionBox) {
-        return box.locationY === 'bottom' ? this.canvas.height - box.size :
+        return box.locationY === 'center' ? (this.canvas.height/2) - box.size :
+            box.locationY === 'bottom' ? this.canvas.height - box.size :
             box.locationY === 'top' ? 0 : box.locationYNumber
     }
 
