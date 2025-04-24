@@ -26,12 +26,14 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "types": ["next-auth"]
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     "next-env.d.ts",
+    "next-auth.d.ts",
     ".next/types/**/*.ts"
   ],
   "exclude": [

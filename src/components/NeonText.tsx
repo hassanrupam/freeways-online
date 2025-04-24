@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface NeonTextProps {
     text: string;
@@ -9,7 +9,7 @@ interface NeonTextProps {
     weight?: 'thin' | 'extralight' | 'light' | 'normal' | 'medium' | 'semibold' | 'bold' | 'extrabold';
 }
 
-const NeonText = ({ text, size = 'small', weight = 'normal', effectClass= 'logo' }: NeonTextProps) => {
+const NeonText = ({ text, size = 'small', weight = 'normal', effectClass = 'logo' }: NeonTextProps) => {
     const [sizeClasses, setSizeClasses] = useState<string>("text-xl md:text-2xl");
     const [weightClasses, setWeightClasses] = useState<string>("font-normal");
 
@@ -37,42 +37,124 @@ const NeonText = ({ text, size = 'small', weight = 'normal', effectClass= 'logo'
         setWeightClasses(weightMap[weight] || "font-normal");
     }, [weight]);
 
-    const renderDynamicSpans = (text: string) => {
-        if (text.length <= 2) return <b>{text}</b>;
+    const getMaxSpansFromTextLength = (textLength: number) => {
+        if (textLength <= 4) return 2;
+        if (textLength <= 6) return 3;
+        if (textLength <= 8) return 4;
+        if (textLength <= 10) return 5;
+        if (textLength <= 20) return 6;
+        return Math.floor(textLength / 3);
+    }
 
-        // Generate two unique random indices
-        let index1 = Math.floor(Math.random() * text.length);
-        let index2 = Math.floor(Math.random() * text.length);
-        while (index2 === index1) {
-            index2 = Math.floor(Math.random() * text.length);
+    const renderDynamicSpans = (text: string) => {
+        if (text.length <= 3) return <b>{text}</b>;
+
+        const minSpans = 2;
+        const maxSpans = getMaxSpansFromTextLength(text.length);
+        const spanCount = Math.floor(Math.random() * (maxSpans - minSpans + 1)) + minSpans;
+
+        const spanSections = Array.from({ length: spanCount }, (_, i) => {
+            const sectionSize = Math.floor(text.length / spanCount);
+            const startRange = i * sectionSize;
+            const endRange = i === spanCount - 1 ? text.length - 1 : (i + 1) * sectionSize - 1;
+
+            const length = Math.random() < 0.5 ? 1 : 2;
+            const maxStart = endRange - length + 1;
+            const start = Math.max(startRange, Math.floor(Math.random() * (maxStart - startRange + 1)) + startRange);
+
+            return { start, length };
+        });
+        const elements = [];
+        let currentIndex = 0;
+
+        for (const { start, length } of spanSections.sort((a, b) => a.start - b.start)) {
+            if (start > currentIndex) {
+                elements.push(
+                    <React.Fragment key={`text-${currentIndex}`}>
+                        {text.slice(currentIndex, start)}
+                    </React.Fragment>
+                );
+            }
+
+            elements.push(
+                <span key={`span-${start}`}>{text.slice(start, start + length)}</span>
+            );
+
+            currentIndex = start + length;
         }
 
-        const spanIndices = [index1, index2].sort((a, b) => a - b);
+        if (currentIndex < text.length) {
+            elements.push(
+                <React.Fragment key={`text-${currentIndex}`}>
+                    {text.slice(currentIndex)}
+                </React.Fragment>
+            );
+        }
 
-        return (
-            <p>
-                {text.split('').map((char, index) => {
-                    if (index === spanIndices[0] || index === spanIndices[1]) {
-                        return <span key={index}>{char}</span>;
-                    } else {
-                        return <>{char}</>;
-                    }
-                })}
-            </p>
-        );
+        return <p className="w-full h-full">{elements}</p>;
     };
 
+
+
+    const actualText = renderDynamicSpans(text.trim());
+
     return (
-        <div className="flex items-center justify-center p-4">
-            <h1
-                className={`${sizeClasses} ${weightClasses} text-center ${effectClass}
-                bg-gradient-to-r from-sky-600 to-pink-500 bg-clip-text text-transparent 
-                drop-shadow-[0_0_10px_#a855f7,0_0_20px_#a855f7,0_0_30px_#a855f7] 
-                font-barlow`}
+        <div className="relative w-full h-full">
+            {/* Actual Gradient Text */}
+            <span
+                className={`${sizeClasses} ${weightClasses} ${effectClass} w-full h-full relative 
+    text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-pink-500 
+    font-barlow z-[1000]`}
             >
-                {renderDynamicSpans(text)}
-            </h1>
+                {actualText}
+            </span>
+            {/* Glow Layer */}
+            <span
+                aria-hidden="true"
+                className={`${sizeClasses} ${weightClasses} ${effectClass} w-full h-full absolute inset-0 
+    text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-pink-500 
+    drop-shadow-[0_0_15px_#38bdf8, 0_0_25px_#ec4899, 0_0_35px_#ec4899] 
+    blur-sm pointer-events-none select-none font-barlow z-[500]`}
+            >
+                {actualText}
+            </span>
+            <span
+                aria-hidden="true"
+                className={`${sizeClasses} ${weightClasses} ${effectClass} w-full h-full absolute inset-0 
+    text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-pink-600 
+    drop-shadow-[0_0_15px_#38bdf8, 0_0_25px_#ec4899, 0_0_35px_#ec4899] 
+    blur-xl pointer-events-none select-none font-barlow z-[100]`}
+            >
+                {actualText}
+            </span>
+            <span
+                aria-hidden="true"
+                className={`${sizeClasses} ${weightClasses} ${effectClass} w-full h-full absolute inset-0 
+    text-transparent bg-clip-text bg-gradient-to-r from-sky-700 to-pink-700 
+    drop-shadow-[0_0_15px_#38bdf8, 0_0_25px_#ec4899, 0_0_35px_#ec4899] 
+    blur-md pointer-events-none select-none font-barlow z-[300]`}
+            >
+                {actualText}
+            </span>
+            <span
+                aria-hidden="true"
+                className={`text-9xl font-bold ${effectClass} w-full h-full absolute inset-0 
+    text-transparent bg-clip-text bg-gradient-to-r from-sky-700 to-pink-700 
+    drop-shadow-[0_0_15px_#38bdf8, 0_0_25px_#ec4899, 0_0_35px_#ec4899] 
+    blur-2xl pointer-events-none select-none font-barlow z-[300]`}
+            >
+                {actualText}
+            </span>
+            {/* Gradient Stroke Layer */}
+            <span
+                aria-hidden="true"
+                className={`${sizeClasses} ${weightClasses} ${effectClass} w-full h-full absolute inset-0 
+        text-transparent bg-clip-text bg-gradient-to-r from-sky-300 to-pink-300 font-barlow`}
+            >
+                {actualText}
+            </span>
         </div>
+
     );
 };
 

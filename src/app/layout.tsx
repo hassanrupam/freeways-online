@@ -9,14 +9,10 @@ import { PersistGate } from "redux-persist/integration/react";
 
 export default function Layout({ children }: { children: ReactNode }) {
     return (
-        <html lang="en">
-            <body>
-                <Provider store={store}>
-                    <PersistGate loading={null} persistor={persistor as Persistor}>
-                        <SessionProvider>{children}</SessionProvider>
-                    </PersistGate>
-                </Provider>
-            </body>
-        </html>
+        <Provider store={store}>
+            <PersistGate loading={null} persistor={persistor as Persistor}>
+                <SessionProvider>{children}</SessionProvider>
+            </PersistGate>
+        </Provider>
     );
 }

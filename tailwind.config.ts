@@ -9,6 +9,7 @@ export default {
   theme: {
     extend: {
       backgroundImage: {
+        'google-logo': "url('/assets/images/google.png')",
         'landing-bg': "url('/assets/images/landing_bg.png')",
         'landing-bg-mobile': "url('/assets/images/landing_bg_square.png')",
       },
