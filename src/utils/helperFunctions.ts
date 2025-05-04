@@ -94,3 +94,8 @@ export const getLevelWiseCollisionData = (
     }
     return []; // Return empty array if no match
 };
+
+export const charCounter = (str: string): number => {
+    const charCount = str.length;
+    return charCount;
+}
