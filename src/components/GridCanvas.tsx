@@ -7,6 +7,7 @@ import { generateCenteredSpiralMatrix, getLevelWiseCollisionData } from "@/utils
 import { getApiFromOutboundMiddleware } from "@/utils/requests/internalRequestHelper";
 import { useEffect, useState } from "react";
 import FancyFullScreenLoader from "./FancyFullScreenLoader";
+import GameControls from "./GameControls";
 
 const GridCanvas = () => {
   const dispatch = useAppDispatch();
@@ -55,6 +56,7 @@ const GridCanvas = () => {
 
   return (
     <div className="w-screen h-screen flex flex-col">
+      <GameControls/>
       {<FancyFullScreenLoader loading={isLoading} message={"Game is Loading..."}/>}
       <div
         className={`grid transition-all duration-500 ${

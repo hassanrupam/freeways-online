@@ -13,7 +13,9 @@ const AppTooltip: React.FC<AppTooltipProps> = ({ children, ...props }) => {
             }}
 
         >
-            {children}
+            <div>
+                {children}
+            </div>
         </Tooltip>
     );
 };
