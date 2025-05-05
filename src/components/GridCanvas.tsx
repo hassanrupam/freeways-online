@@ -56,7 +56,9 @@ const GridCanvas = () => {
 
   return (
     <div className="w-screen h-screen flex flex-col">
-      <GameControls/>
+      {!isLoading &&
+        <GameControls />
+      }
       {<FancyFullScreenLoader loading={isLoading} message={"Game is Loading..."}/>}
       <div
         className={`grid transition-all duration-500 ${

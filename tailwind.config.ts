@@ -8,7 +8,15 @@ export default {
   ],
   theme: {
     extend: {
+      animation: {
+        'bg-pan': 'bgPan 120s ease-in-out infinite',
+        'spin-slower': 'spin 120s linear infinite',
+        'spin-slow': 'spin 90s linear infinite',
+        'spin-medium': 'spin 60s linear infinite',
+        'spin-fast': 'spin 0.5s linear infinite',
+      },
       backgroundImage: {
+        'neon-circle': "url('/assets/images/neon-circle.png')",
         'google-logo': "url('/assets/images/google.png')",
         'controller-neon': "url('/assets/images/controller-neon.png')",
         'landing-bg': "url('/assets/images/landing_bg.png')",
@@ -21,6 +29,14 @@ export default {
       fontFamily: {
         barlow: ['barlow', 'sans-serif'], // Custom font name
       },
+      keyframes: {
+        bgPan: {
+          '0%': { backgroundPosition: 'center center' },
+          '25%': { backgroundPosition: 'center top' },
+          '75%': { backgroundPosition: 'center bottom' },
+          '100%': { backgroundPosition: 'center center' },
+        },
+      }
     },
   },
   plugins: [

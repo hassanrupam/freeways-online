@@ -30,7 +30,7 @@ html, body {
 }
 
 .logo p, .sub-logo p{
-  -webkit-text-stroke: 0.6px #ffffffa9; 
+  -webkit-text-stroke: 0.5px #ffffffa9; 
 }
 
 .logo p span{
@@ -65,7 +65,7 @@ html, body {
   0%, 78%, 81%, 83%, 92.5%, 100% {
     color: inherit;
     text-shadow: inherit;
-    -webkit-text-stroke: 0.6px #ffffffa9; 
+    -webkit-text-stroke: 0.5px #ffffffa9; 
   }
   79%, 80%, 82%, 92% {
     color: #333;
